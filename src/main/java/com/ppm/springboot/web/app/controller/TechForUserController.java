@@ -1,5 +1,6 @@
 package com.ppm.springboot.web.app.controller;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,10 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.ppm.springboot.web.app.dao.MemberDAO;
 import com.ppm.springboot.web.app.dao.TechnologiesForUserDAO;
-import com.ppm.springboot.web.app.entity.Member;
 import com.ppm.springboot.web.app.entity.TechForUser;
 
 @Controller
@@ -25,35 +25,34 @@ public class TechForUserController {
 	@Autowired
 	private TechnologiesForUserDAO technologiesForUserDAO;
 	
-	private MemberDAO memberDAO;
-	
 	@PostMapping
-	TechForUser createTechForUser(@RequestBody TechForUser techForUser) {
-		Member member = new Member();
-		member.setName("");
-		member.setLastName("");
-		member.setRol("");
-		member.setCreated_by("");
-		member.setUpdate_by("");
-		techForUser.setMembers(member);
-		return technologiesForUserDAO.save(techForUser);
+	public ResponseEntity<TechForUser> createTechForUser(@RequestBody TechForUser techForUser) {
+		TechForUser savedTechForUser = technologiesForUserDAO.save(techForUser);
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+	            .buildAndExpand(savedTechForUser.getId()).toUri();
+		
+		return ResponseEntity.created(location).body(savedTechForUser);
 	}
 	
-	@PutMapping(path = "/techForUser/{id}")
-    Optional<TechForUser> updateTechForUser(@PathVariable Long id, @RequestBody TechForUser requestTechForUser){
-        return technologiesForUserDAO.findById(id).map(techForUser -> {
-            techForUser.setPorcentaje(requestTechForUser.getPorcentaje());
-
-            return technologiesForUserDAO.save(techForUser);
-        });
+	@PutMapping(path = "/{id}")
+    public ResponseEntity<TechForUser> updateTechForUser(@PathVariable Long id, @RequestBody TechForUser techForUser){
+		Optional<TechForUser> optionalTechForUser= technologiesForUserDAO.findById(id);
+        if (!optionalTechForUser.isPresent()) {
+            return ResponseEntity.unprocessableEntity().build();
+        }
+        
+        techForUser.setId(optionalTechForUser.get().getId());
+        technologiesForUserDAO.save(techForUser);
+        
+        return ResponseEntity.noContent().build();
     }
 	
-	@GetMapping(path = "/forUser")
+	@GetMapping
     public List< TechForUser > getTechForUser() {
         return technologiesForUserDAO.findAll();
     }
 
-    @RequestMapping(path = "/forUser/{id}")// /products/{productId} -> /products/1
+    @RequestMapping(path = "/{id}")// /products/{productId} -> /products/1
     public ResponseEntity<TechForUser> getTechForUserById(@PathVariable("id") Long id){
         Optional<TechForUser> optionalTechForUser= technologiesForUserDAO.findById(id);
         if(optionalTechForUser.isPresent()){

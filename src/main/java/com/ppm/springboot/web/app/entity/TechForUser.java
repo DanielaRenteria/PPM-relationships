@@ -22,7 +22,7 @@ public class TechForUser implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String porcentaje;
+	private Integer percentage;
 
 	public Long getId() {
 		return id;
@@ -32,13 +32,10 @@ public class TechForUser implements Serializable {
 		this.id = id;
 	}
 
-	public String getPorcentaje() {
-		return porcentaje;
-	}
-	
-	@OneToMany(mappedBy= "tech_forusers",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "tech_forusers_id")
 	private List<Technology> technologies;
-	
+
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "member_id", referencedColumnName = "id")
 	private Member members;
@@ -47,11 +44,6 @@ public class TechForUser implements Serializable {
 		technologies = new ArrayList<Technology>();
 	}
 
-	public void setPorcentaje(String porcentaje) {
-		this.porcentaje = porcentaje;
-	}
-	
-	
 	public List<Technology> getTechnologies() {
 		return technologies;
 	}
@@ -63,7 +55,6 @@ public class TechForUser implements Serializable {
 	public void addTechnology(Technology technology) {
 		technologies.add(technology);
 	}
-	
 
 	public Member getMembers() {
 		return members;
@@ -71,6 +62,14 @@ public class TechForUser implements Serializable {
 
 	public void setMembers(Member members) {
 		this.members = members;
+	}
+
+	public Integer getPercentage() {
+		return percentage;
+	}
+
+	public void setPercentage(Integer percentage) {
+		this.percentage = percentage;
 	}
 
 	private static final long serialVersionUID = 1L;

@@ -60,9 +60,13 @@ public class MemberController {
 			Member updateMember = optionalMember.get();
 			updateMember.setName(member.getName());
 			updateMember.setLastName(member.getLastName());
-			updateMember.setRol(member.getRol());
-			updateMember.setUpdate_by(member.getUpdate_by());
+			updateMember.setRole(member.getRole());
+			updateMember.setCreateAt(member.getCreateAt());
+			updateMember.setUpdateAt(member.getUpdateAt());
 			updateMember.setCreated_by(member.getCreated_by());
+			updateMember.setUpdateBy(member.getUpdateBy());
+			updateMember.setCreated_by(member.getCreated_by());
+			updateMember.setActive(member.getActive());
 			return ResponseEntity.ok(updateMember);
 		} else {
 			return ResponseEntity.notFound().build();
